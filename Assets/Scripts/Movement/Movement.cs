@@ -9,7 +9,7 @@ public class Movement : MonoBehaviour
 
     private Coroutine _moving;
 
-    public Speed Speed { get; private set; } = new Speed(0.5f);
+    public Speed Speed { get; private set; } = new Speed(5f);
     public bool MovementFinished { get; private set; } = true;
     public Vector3Int CurrentGridPosition => PositionConverter.Wrap(transform.position, _grid.GridType);
     public Cell CurrentCell { get; private set; }
@@ -66,13 +66,10 @@ public class Movement : MonoBehaviour
     private IEnumerator MovingToNextPoint(Vector3Int targetGridPosition)
     {
         Vector3 targetPosition = _grid.GetCell(targetGridPosition).transform.position;
-        float elapsedTime = 0f;
-        Vector3 startPosition = transform.position;
 
-        while(elapsedTime< Speed.CellsPerSecond)
+        while(Vector3.Distance(transform.position, targetPosition)>0.01)
         {
-            elapsedTime += Time.deltaTime;
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime/ Speed.CellsPerSecond);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, Speed.Value*Time.deltaTime);
 
             Rotate(targetPosition);
 
